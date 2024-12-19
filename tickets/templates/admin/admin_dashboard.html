@@ -1,0 +1,207 @@
+{% extends 'tickets/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Administrator Dashboard</h2>
+    
+    <!-- User Management Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>User Management</h3>
+        </div>
+        <div class="card-body">
+            <!-- User List Table -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Existing Users</h4>
+                <a href="{% url 'user_create' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create New User
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Staff Status</th>
+                            <th>Active</th>
+                            <th>Groups</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge {% if user.is_staff %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ user.is_staff|yesno:"Yes,No" }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ user.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>
+                                {% for group in user.groups.all %}
+                                    <span class="badge bg-info">{{ group.name }}</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editUser{{ user.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="POST" action="{% url 'admin_delete_user' user.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        <!-- Edit User Modal -->
+                        <div class="modal fade" id="editUser{{ user.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit User: {{ user.username }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="POST" action="{% url 'admin_edit_user' user.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="email{{ user.id }}">Email:</label>
+                                                <input type="email" class="form-control" id="email{{ user.id }}" name="email" value="{{ user.email }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="is_staff{{ user.id }}">Staff Status:</label>
+                                                <input type="checkbox" id="is_staff{{ user.id }}" name="is_staff" {% if user.is_staff %}checked{% endif %}>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="is_active{{ user.id }}">Active Status:</label>
+                                                <input type="checkbox" id="is_active{{ user.id }}" name="is_active" {% if user.is_active %}checked{% endif %}>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Groups:</label>
+                                                {% for group in groups %}
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="group{{ user.id }}{{ group.id }}" 
+                                                           name="groups" value="{{ group.id }}"
+                                                           {% if group in user.groups.all %}checked{% endif %}>
+                                                    <label class="form-check-label" for="group{{ user.id }}{{ group.id }}">
+                                                        {{ group.name }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Group Management Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Group Management</h3>
+        </div>
+        <div class="card-body">
+            <!-- Group List Table -->
+            <h4>Existing Groups</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Group Name</th>
+                            <th>Member Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>{{ group.user_set.count }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editGroup{{ group.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="POST" action="{% url 'admin_delete_group' group.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this group?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        <!-- Edit Group Modal -->
+                        <div class="modal fade" id="editGroup{{ group.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Group: {{ group.name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="POST" action="{% url 'admin_edit_group' group.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="group_name{{ group.id }}">Group Name:</label>
+                                                <input type="text" class="form-control" id="group_name{{ group.id }}" 
+                                                       name="group_name" value="{{ group.name }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Create New Group Form -->
+            <h4 class="mt-4">Create New Group</h4>
+            <form method="POST" action="{% url 'admin_create_group' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="group_name">Group Name:</label>
+                    <input type="text" class="form-control" id="group_name" name="group_name" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Create Group</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

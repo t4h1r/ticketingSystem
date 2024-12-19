@@ -1,0 +1,56 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Welcome to Simple Ticketing</h1>
+            <p class="lead mb-4">A simple and efficient incident management system</p>
+            
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-4">Get Started</h2>
+                    <div class="d-grid gap-3 col-lg-6 mx-auto">
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{% url 'user_create' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-ticket-alt fa-2x text-primary mb-3"></i>
+                            <h3 class="h5">Create Incidents</h3>
+                            <p class="card-text">Easily create and track incidents with detailed information</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-tasks fa-2x text-primary mb-3"></i>
+                            <h3 class="h5">Track Progress</h3>
+                            <p class="card-text">Monitor the status and progress of your incidents</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                            <h3 class="h5">Team Collaboration</h3>
+                            <p class="card-text">Work together with your team to resolve incidents</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

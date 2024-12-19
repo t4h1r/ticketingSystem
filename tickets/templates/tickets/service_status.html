@@ -1,0 +1,104 @@
+{% extends "tickets/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Service Status</h2>
+        {% if show_admin_actions %}
+            <a href="{% url 'create_service' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Add Service
+            </a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Service Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th>Updated By</th>
+                            {% if show_admin_actions %}
+                                <th class="text-center">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                            <tr>
+                                <td><strong>#{{ service.id }}</strong></td>
+                                <td>{{ service.name }}</td>
+                                <td>{{ service.description|default:"-" }}</td>
+                                <td>
+                                    <span class="badge bg-{% if service.status == 'Operational' %}success{% elif service.status == 'Degraded Performance' %}warning{% elif service.status == 'Partial Outage' %}warning text-dark{% else %}danger{% endif %} rounded-pill">
+                                        {% if service.status == 'Operational' %}
+                                            <i class="fas fa-check-circle me-1"></i>
+                                        {% elif service.status == 'Degraded Performance' %}
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                        {% elif service.status == 'Partial Outage' %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-times-circle me-1"></i>
+                                        {% endif %}
+                                        {{ service.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if service.last_updated %}
+                                        <i class="far fa-calendar-alt me-1"></i> {{ service.last_updated|date:"Y-m-d" }}<br>
+                                        <small class="text-muted"><i class="far fa-clock me-1"></i> {{ service.last_updated|date:"H:i" }}</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if service.updated_by %}
+                                        <i class="fas fa-user me-1"></i> {{ service.updated_by.user.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                {% if show_admin_actions %}
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="{% url 'edit_service' service.id %}" class="btn btn-sm btn-outline-primary" title="Edit Service">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'delete_service' service.id %}" 
+                                               class="btn btn-sm btn-outline-danger" 
+                                               onclick="return confirm('Are you sure you want to delete this service? This cannot be undone.');"
+                                               title="Delete Service">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="{% if show_admin_actions %}7{% else %}6{% endif %}" class="text-center">
+                                    No services available
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

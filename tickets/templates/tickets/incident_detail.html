@@ -1,0 +1,61 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Incident Details #{{ incident.id }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Title</h5>
+                    <p>{{ incident.title }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Priority</h5>
+                    <p><span class="badge bg-{% if incident.priority == 'High' %}danger{% elif incident.priority == 'Medium' %}warning{% else %}info{% endif %}">
+                        {{ incident.priority }}
+                    </span></p>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Status</h5>
+                    <p><span class="badge bg-{% if incident.state == 'New' %}primary{% elif incident.state == 'In Progress' %}warning{% elif incident.state == 'Resolved' %}success{% else %}secondary{% endif %}">
+                        {{ incident.state }}
+                    </span></p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Created By</h5>
+                    <p>{{ incident.reportedby.username }}</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Created Date</h5>
+                    <p>{{ incident.incidentcreated|date:"Y-m-d H:i" }}</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Description</h5>
+                    <p>{{ incident.description }}</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'incident_edit' incident.id %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'incident_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

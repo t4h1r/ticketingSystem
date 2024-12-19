@@ -1,0 +1,142 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Incident Dashboard</h2>
+            <a href="{% url 'create_incident' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i>Create New Incident
+            </a>
+        </div>
+
+        <!-- Incidents Reported By Me -->
+        <div class="card mb-4">
+            <div class="card-header {% if user.is_staff %}bg-primary{% else %}bg-success{% endif %} text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-paper-plane me-2"></i>Incidents Reported By Me
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if reported_incidents %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                    <th>Affected Service</th>
+                                    <th>Reported By</th>
+                                    <th>Assignee</th>
+                                    <th>Created Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for incident in reported_incidents %}
+                                    {% include 'tickets/incident_row.html' with incident=incident %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>You haven't reported any incidents yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Incidents Assigned to Me (Staff/Superuser Only) -->
+        {% if user.is_staff and assigned_incidents is not None %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>Incidents Assigned to Me
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if assigned_incidents %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                    <th>Affected Service</th>
+                                    <th>Reported By</th>
+                                    <th>Assignee</th>
+                                    <th>Created Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for incident in assigned_incidents %}
+                                    {% include 'tickets/incident_row.html' with incident=incident %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>No incidents are currently assigned to you.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- All Incidents (Staff/Superuser Only) -->
+        {% if user.is_staff or user.is_superuser %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-alt me-2"></i>All Incidents
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if all_incidents %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Priority</th>
+                                        <th>Affected Service</th>
+                                        <th>Reported By</th>
+                                        <th>Assignee</th>
+                                        <th>Created Date</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for incident in all_incidents %}
+                                        {% include 'tickets/incident_row.html' with incident=incident %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>No incidents found in the system.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="container mt-5">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Please <a href="{% url 'login' %}" class="alert-link">login</a> to view incidents or <a href="{% url 'user_create' %}" class="alert-link">sign up</a> for an account.
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
