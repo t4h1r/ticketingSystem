@@ -367,12 +367,12 @@ def incident_edit(request, incident_id):
 @login_required
 def incident_delete(request, incident_id):
     incident = get_object_or_404(Incident, id=incident_id)
-    # Check if user has permission to delete
-    if request.user.is_staff or request.user.is_superuser or incident.reportedby.user == request.user:
+    # Only staff and superusers can delete incidents
+    if request.user.is_staff or request.user.is_superuser:
         incident.delete()
         messages.success(request, 'Incident deleted successfully.')
     else:
-        messages.error(request, 'You do not have permission to delete this incident.')
+        messages.error(request, 'Only staff members can delete incidents.')
     return redirect('incident_list')
 
 def preview_username(request):
