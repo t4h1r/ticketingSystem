@@ -34,15 +34,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/create/' %}active{% endif %}" href="{% url 'create_incident' %}">
-                        <i class="fas fa-plus-circle me-1"></i>Create Incident
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/incidents/' %}active{% endif %}" href="{% url 'incident_list' %}">
-                        <i class="fas fa-clipboard-list me-1"></i>
-                        {% if reported_incidents_count > 0 %}
-                            <span class="badge bg-primary rounded-pill">{{ reported_incidents_count }}</span>
-                        {% endif %}
+                        Create Incident
                     </a>
                 </li>
                 <li class="nav-item">
@@ -51,13 +43,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'service_status' %}">Service Status</a>
                 </li>
-                {% if user.is_staff %}
+                <!-- {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/">
-                            <i class="fas fa-cog me-1"></i>Admin
+                            Django Admin
                         </a>
                     </li>
-                {% endif %}
+                {% endif %} -->
             </ul>
             <div class="navbar-nav ms-auto">
                 <!-- Profile Dropdown -->
